@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: face-recognition-app
+  labels:
+    app: face-recognition-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: face-recognition-app
+  template:
+    metadata:
+      labels:
+        app: face-recognition-app
+    spec:
+      containers:
+        - name:  face-recognition-app
+          image:  face-recognition-app
+          imagePullPolicy: Never
+          env:
+            - name:  FACE_RECOGNITION
+              valueFrom:
+                secretKeyRef:
+                  name: secrets
+                  key: face-recognition
+                  optional: false
+
+            - name:  PERSON_INFO
+              valueFrom:
+                secretKeyRef:
+                  name: secrets
+                  key: person-info
+                  optional: false
+
+          ports:
+            - containerPort: 80
+          resources:
+            limits:
+              cpu: "2"
+              memory: "2G"
+      restartPolicy: Always
+            

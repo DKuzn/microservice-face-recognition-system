@@ -1,0 +1,9 @@
+[submodule "face-recognition-microservice"]
+	path = face-recognition-microservice
+	url = https://github.com/DKuzn/face-recognition-microservice.git
+[submodule "person-info-microservice"]
+	path = person-info-microservice
+	url = https://github.com/DKuzn/person-info-microservice.git
+[submodule "face-recognition-app"]
+	path = face-recognition-app
+	url = https://github.com/DKuzn/face-recognition-app.git

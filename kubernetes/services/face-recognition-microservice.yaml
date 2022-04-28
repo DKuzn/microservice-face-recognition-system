@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: face-recognition-microservice
+spec:
+  selector:
+    app: face-recognition-microservice
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80
