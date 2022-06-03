@@ -7,3 +7,9 @@
 [submodule "face-recognition-app"]
 	path = face-recognition-app
 	url = https://github.com/DKuzn/face-recognition-app.git
+[submodule "face-recognition-admin-microservice"]
+	path = face-recognition-admin-microservice
+	url = https://github.com/DKuzn/face-recognition-admin-microservice.git
+[submodule "face-recognition-admin-app"]
+	path = face-recognition-admin-app
+	url = https://github.com/DKuzn/face-recognition-admin-app.git
