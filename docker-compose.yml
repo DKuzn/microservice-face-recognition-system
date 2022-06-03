@@ -1,26 +1,21 @@
-version: '3.1'
-
 services:
-
   face-recognition-microservice:
     image: face-recognition-microservice
     build: 
       context: ./face-recognition-microservice
       dockerfile: replication-container.dockerfile
     restart: always
-    ports:
-     - 8000:80
+    # ports:
+    #  - 8000:80
     environment:
-      DATABASE_URL: postgres://app:mypass@192.168.0.104:5432/faces
+      DATABASE_URL: postgres://app:mypass@db:5432/faces
     deploy:
-      # mode: replicated
-      # replicas: 2
       resources:
         limits:
           cpus: '4.0'
-          memory: 4G
-    # links:
-    #   - db
+          memory: 2G
+    links:
+      - db
 
   person-info-microservice:
     image: person-info-microservice
@@ -28,17 +23,36 @@ services:
       context: ./person-info-microservice
       dockerfile: replication-container.dockerfile
     restart: always
-    ports:
-      - 8001:80
+    # ports:
+    #   - 8001:80
     environment:
-      DATABASE_URL: postgres://app:mypass@192.168.0.104:5432/persons
+      DATABASE_URL: postgres://app:mypass@db:5432/persons
     deploy:
       resources:
         limits:
           cpus: '2.0'
           memory: 1G
-    # links:
-    #   - db
+    links:
+      - db
+
+  face-recognition-admin-microservice:
+    image: face-recognition-admin-microservice
+    build:
+      context: ./face-recognition-admin-microservice
+      dockerfile: replication-container.dockerfile
+    restart: always
+    # ports:
+    #   - 8002:80
+    environment:
+      FEATURES_DB: postgres://app:mypass@db:5432/faces
+      PERSONS_DB: postgres://app:mypass@db:5432/persons
+    deploy:
+      resources:
+        limits:
+          cpus: '2.0'
+          memory: 2G
+    links:
+      - db
 
   face-recognition-app:
     image: face-recognition-app
@@ -46,38 +60,59 @@ services:
       context: ./face-recognition-app
       dockerfile: Dockerfile
     restart: always
-    ports:
-     - 0.0.0.0:80:80
+    # ports:
+    #  - 0.0.0.0:80:80
     environment:
-      FACE_RECOGNITION: http://192.168.0.104:8000/
-      PERSON_INFO: http://192.168.0.104:8001/
+      FACE_RECOGNITION: http://face-recognition-microservice/
+      PERSON_INFO: http://person-info-microservice/
+    deploy:
+      resources:
+        limits:
+          cpus: '2.0'
+          memory: 1G
+    links:
+      - face-recognition-microservice
+      - person-info-microservice
+
+  face-recognition-admin-app:
+    image: face-recognition-admin-app
+    build: 
+      context: ./face-recognition-admin-app
+      dockerfile: Dockerfile
+    restart: always
+    # ports:
+    # - 0.0.0.0:8082:80
+    environment:
+      DB_ADMIN: http://face-recognition-admin-microservice/
+    deploy:
+      resources:
+        limits:
+          cpus: '2.0'
+          memory: 1G
+    links:
+      - face-recognition-admin-microservice
+
+  db:
+    image: postgres
+    restart: always
+    # ports:
+    #   - 5432:5432
+    environment:
+      POSTGRES_PASSWORD: mypass
+      POSTGRES_USER: app
     deploy:
       resources:
         limits:
           cpus: '2.0'
           memory: 1G
 
-  # db:
-  #   image: postgres
-  #   restart: always
-  #   ports:
-  #     - 5432:5432
-  #   environment:
-  #     POSTGRES_PASSWORD: mypass
-  #     POSTGRES_USER: app
-  #   deploy:
-  #     resources:
-  #       limits:
-  #         cpus: '2.0'
-  #         memory: 1G
-
-  # adminer:
-  #   image: adminer
-  #   restart: always
-  #   ports:
-  #     - 8080:8080
-  #   deploy:
-  #     resources:
-  #       limits:
-  #         cpus: '0.5'
-  #         memory: 500M
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - 8081:8080
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 500M
