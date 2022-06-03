@@ -37,7 +37,7 @@ spec:
             - containerPort: 80
           resources:
             limits:
-              cpu: "2"
-              memory: "2G"
+              cpu: "1"
+              memory: "1G"
       restartPolicy: Always
             
